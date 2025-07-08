@@ -45,6 +45,7 @@ export const templates = sqliteTable("templates", {
   description: text("description"),
   icon: text("icon"),
   questions: text("questions"), // JSON array of questions
+  workflow: text("workflow"), // JSON object with category and steps
   createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
 });

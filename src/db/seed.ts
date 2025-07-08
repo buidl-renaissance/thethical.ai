@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { eq } from "drizzle-orm";
 import { blogPosts, templates } from "./schema";
 import { defaultTemplates, Template } from "../data/template";
 
@@ -210,17 +211,39 @@ async function seedTemplates() {
     
     for (const template of defaultTemplates) {
       const templateData = template as Template;
-      await db.insert(templates).values({
-        templateId: templateData.id,
-        name: templateData.name,
-        tag: templateData.tag,
-        description: templateData.description,
-        icon: templateData.icon || null,
-        questions: JSON.stringify(templateData.questions || []),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-      console.log(`✅ Added template: ${templateData.name}`);
+      
+      // Check if template already exists
+      const existingTemplate = await db.select().from(templates).where(eq(templates.templateId, templateData.id)).limit(1);
+      
+      if (existingTemplate.length > 0) {
+        // Update existing template
+        await db.update(templates)
+          .set({
+            name: templateData.name,
+            tag: templateData.tag,
+            description: templateData.description,
+            icon: templateData.icon || null,
+            questions: JSON.stringify(templateData.questions || []),
+            workflow: templateData.workflow ? JSON.stringify(templateData.workflow) : null,
+            updatedAt: new Date(),
+          })
+          .where(eq(templates.templateId, templateData.id));
+        console.log(`🔄 Updated template: ${templateData.name}`);
+      } else {
+        // Insert new template
+        await db.insert(templates).values({
+          templateId: templateData.id,
+          name: templateData.name,
+          tag: templateData.tag,
+          description: templateData.description,
+          icon: templateData.icon || null,
+          questions: JSON.stringify(templateData.questions || []),
+          workflow: templateData.workflow ? JSON.stringify(templateData.workflow) : null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+        console.log(`✅ Added template: ${templateData.name}`);
+      }
     }
     
     console.log("🎉 Templates seeded successfully!");
