@@ -36,6 +36,19 @@ export const projects = sqliteTable("projects", {
   deletedAt: integer("deleted_at", { mode: "timestamp" }),
 });
 
+// Templates table
+export const templates = sqliteTable("templates", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  templateId: text("template_id").notNull().unique(), // event, artwork, contest, etc.
+  name: text("name").notNull(),
+  tag: text("tag").notNull(),
+  description: text("description"),
+  icon: text("icon"),
+  questions: text("questions"), // JSON array of questions
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+});
+
 // Events/workshops table
 export const events = sqliteTable("events", {
   id: integer("id").primaryKey({ autoIncrement: true }),

@@ -3,7 +3,36 @@ import Head from "next/head";
 import styled from "styled-components";
 import Transcriber from "../components/Transcriber";
 import Camera from "@/components/Camera";
+import WorkflowEngine from "@/components/WorkflowEngine";
+import WorkflowBuilder from "@/components/WorkflowBuilder";
 import Image from "next/image";
+
+interface WorkflowTemplate {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+  steps: string[];
+  confidence: number;
+}
+
+interface WorkflowStep {
+  id: string;
+  title: string;
+  description: string;
+  completed: boolean;
+  estimatedTime: string;
+}
+
+interface Workflow {
+  id: string;
+  templateId: string;
+  name: string;
+  steps: WorkflowStep[];
+  createdAt: string;
+  status: string;
+}
 
 // Styled Components using the Clarity theme
 const Container = styled.div`
@@ -43,15 +72,6 @@ const HeroDescription = styled.p`
 
 const Section = styled.section`
   margin: ${({ theme }) => theme.spacing[4]} 0;
-`;
-
-const SectionTitle = styled.h3`
-  font-size: ${({ theme }) => theme.typography.fontSize["3xl"]};
-  margin-bottom: ${({ theme }) => theme.spacing[8]};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  font-family: ${({ theme }) => theme.typography.fontFamily.header};
-  color: ${({ theme }) => theme.colors.primary};
-  text-align: center;
 `;
 
 const TranscriptContainer = styled.div`
@@ -116,6 +136,8 @@ const InstructionsText = styled.p`
 export default function Grow() {
   const [transcript, setTranscript] = React.useState("");
   const [userImage, setUserImage] = React.useState("");
+  const [selectedTemplate, setSelectedTemplate] = React.useState<WorkflowTemplate | null>(null);
+  const [activeWorkflow, setActiveWorkflow] = React.useState<Workflow | null>(null);
 
   const handleTranscriptReady = (newTranscript: string) => {
     setTranscript(newTranscript);
@@ -127,6 +149,19 @@ export default function Grow() {
 
   const setError = (error: string) => {
     console.error(error);
+  };
+
+  const handleTemplateSelect = (template: WorkflowTemplate) => {
+    setSelectedTemplate(template);
+  };
+
+  const handleWorkflowStart = (workflow: Workflow) => {
+    setActiveWorkflow(workflow);
+    setSelectedTemplate(null);
+  };
+
+  const handleBackToTemplates = () => {
+    setSelectedTemplate(null);
   };
 
   return (
@@ -155,8 +190,10 @@ export default function Grow() {
             <Instructions>
               <InstructionsText>The images you provide will be used to provide context for your ideas. Upload as many as you want.</InstructionsText>
               <Camera setUserImage={setUserImage} setError={setError} generateImage={generateImage} />
+              {userImage && (
+                <Image src={userImage} alt="User Image" width={256} height={256} />
+              )}
             </Instructions>
-            {/* <Image src={userImage} alt="User Image" width={256} height={256} /> */}
           </Section>
           
 
@@ -178,11 +215,28 @@ export default function Grow() {
             )}
           </Section>
 
-          {userImage && (
-            <Section>
-              <SectionTitle>Your Image</SectionTitle>
-              <Image src={userImage} alt="User Image" width={256} height={256} />
-            </Section>
+          {/* Workflow Engine */}
+          <WorkflowEngine
+            photoData={userImage}
+            transcript={transcript}
+            onTemplateSelect={handleTemplateSelect}
+          />
+
+          {/* Workflow Builder */}
+          {selectedTemplate && (
+            <WorkflowBuilder
+              template={selectedTemplate}
+              onWorkflowStart={handleWorkflowStart}
+              onBack={handleBackToTemplates}
+            />
+          )}
+
+          {/* Active Workflow */}
+          {activeWorkflow && (
+            <div>
+              <h3>Active Workflow: {activeWorkflow.name}</h3>
+              <p>Workflow started successfully!</p>
+            </div>
           )}
         </Main>
       </Container>

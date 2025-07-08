@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
-import { blogPosts } from "./schema";
+import { blogPosts, templates } from "./schema";
+import { defaultTemplates, Template } from "../data/template";
 
 // Load environment variables
 dotenv.config();
@@ -200,5 +201,35 @@ async function seedBlogPosts() {
   }
 }
 
-// Run the seed function
-seedBlogPosts(); 
+async function seedTemplates() {
+  try {
+    // Import database connection inside the function to avoid module-level issues
+    const { db } = await import("./index");
+    
+    console.log("🌱 Seeding templates...");
+    
+    for (const template of defaultTemplates) {
+      const templateData = template as Template;
+      await db.insert(templates).values({
+        templateId: templateData.id,
+        name: templateData.name,
+        tag: templateData.tag,
+        description: templateData.description,
+        icon: templateData.icon || null,
+        questions: JSON.stringify(templateData.questions || []),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      console.log(`✅ Added template: ${templateData.name}`);
+    }
+    
+    console.log("🎉 Templates seeded successfully!");
+  } catch (error) {
+    console.error("❌ Error seeding templates:", error);
+    console.log("💡 Make sure your database is properly configured and accessible");
+  }
+}
+
+// Run the seed functions
+seedBlogPosts();
+seedTemplates(); 
