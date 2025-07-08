@@ -3,13 +3,14 @@ import { createGlobalStyle } from 'styled-components';
 // Color Palette
 export const colors = {
   // Background colors
-  background: '#FFFFFF',
-  backgroundSecondary: '#FAFAFA',
+  background: '#0F0F0F',
+  backgroundSecondary: '#1A1A1A',
+  backgroundDark: '#2b2b2b',
   
   // Primary colors
-  primary: '#222222',
-  primaryLight: '#444444',
-  primaryDark: '#111111',
+  primary: '#FFFFFF',
+  primaryLight: '#E0E0E0',
+  primaryDark: '#CCCCCC',
   
   // Accent colors
   accent: '#4CAF50',
@@ -23,16 +24,16 @@ export const colors = {
   
   // Neutral colors
   white: '#FFFFFF',
-  gray50: '#FAFAFA',
-  gray100: '#F5F5F5',
-  gray200: '#EEEEEE',
-  gray300: '#E0E0E0',
-  gray400: '#BDBDBD',
-  gray500: '#9E9E9E',
-  gray600: '#757575',
-  gray700: '#616161',
-  gray800: '#424242',
-  gray900: '#212121',
+  gray50: '#1A1A1A',
+  gray100: '#2A2A2A',
+  gray200: '#3A3A3A',
+  gray300: '#4A4A4A',
+  gray400: '#5A5A5A',
+  gray500: '#6A6A6A',
+  gray600: '#7A7A7A',
+  gray700: '#8A8A8A',
+  gray800: '#9A9A9A',
+  gray900: '#AAAAAA',
   
   // Status colors
   success: '#4CAF50',
@@ -41,15 +42,15 @@ export const colors = {
   info: '#2196F3',
   
   // Text colors
-  textPrimary: '#222222',
-  textSecondary: '#757575',
-  textTertiary: '#9E9E9E',
-  textInverse: '#FFFFFF',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#B0B0B0',
+  textTertiary: '#808080',
+  textInverse: '#0F0F0F',
   
   // Border colors
-  border: '#E0E0E0',
-  borderLight: '#F5F5F5',
-  borderDark: '#BDBDBD',
+  border: '#2A2A2A',
+  borderLight: '#1A1A1A',
+  borderDark: '#3A3A3A',
 };
 
 // Typography
@@ -63,6 +64,7 @@ export const typography = {
   
   // Font sizes
   fontSize: {
+    xxs: '0.625rem',  // 10px
     xs: '0.75rem',    // 12px
     sm: '0.875rem',   // 14px
     base: '1rem',     // 16px
@@ -144,13 +146,13 @@ export const borderRadius = {
 // Shadows
 export const shadows = {
   none: 'none',
-  sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
-  base: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-  '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-  inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
+  sm: '0 1px 2px 0 rgba(0, 0, 0, 0.3)',
+  base: '0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.3)',
+  md: '0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3)',
+  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3)',
+  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3)',
+  '2xl': '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+  inner: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)',
 };
 
 // Breakpoints

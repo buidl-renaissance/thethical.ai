@@ -236,7 +236,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>The Ethical AI - Understand, Build, Own</title>
+        <title>The Ethical AI - Understand, Build, Grow</title>
         <meta name="description" content="Empowering people with ethical, agentic AI tools to grow their ideas, organize their work, and maintain control of their data." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -244,7 +244,7 @@ export default function Home() {
       <Container>
         <Header>
           <Logo>The Ethical AI</Logo>
-          <Tagline>Understand, Build, Own</Tagline>
+          <Tagline>Understand, Build, Grow</Tagline>
         </Header>
 
         <Main>
@@ -253,7 +253,7 @@ export default function Home() {
             <HeroDescription>
               Capture your idea. We&apos;ll help you grow it. Your data. Your rules.
             </HeroDescription>
-            <CTAButton>Get Started</CTAButton>
+            <CTAButton as="a" href="/grow">Get Started</CTAButton>
           </Hero>
 
           <Section>
