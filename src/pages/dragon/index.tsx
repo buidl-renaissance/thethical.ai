@@ -213,7 +213,7 @@ const EmailTitle = styled.h3`
 
 const EmailDescription = styled.p`
   color: #cccccc;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
   line-height: 1.6;
   margin-bottom: ${({ theme }) => theme.spacing[6]};
 `;
@@ -373,15 +373,11 @@ export default function Dragon() {
         </ImageContainer>
 
         <InfoSection>
-          <InfoTitle>Last Known Sighting: A Historic Factory Turned Creative Haven</InfoTitle>
-          <InfoText>
-            Deep within a sprawling 2-million-square-foot complex on Clay Street in Detroit, 
-            the dragon was last seen drifting through concrete corridors filled with the hum of creation. 
-            Once the beating heart of the auto industry, this seven-building fortress—designed by a 
-            legendary industrial architect—has since been reborn as a sanctuary for artists, 
-            technologists, and makers.
+          <InfoText style={{ textAlign: 'center', marginBottom: '2rem', fontStyle: 'italic', color: '#cccccc' }}>
+            The dragon&apos;s trail grows cold, but hope remains. Join fellow seekers in this digital quest— 
+            where every email becomes a beacon, every subscriber a guardian of the flame.
           </InfoText>
-
+          
           <EmailSection>
             <EmailTitle>Join the Dragon Hunters</EmailTitle>
             <EmailDescription>
@@ -431,20 +427,35 @@ export default function Dragon() {
             </FeatureItem>
           </FeatureList>
 
-          <InfoTitle>A Place of Power</InfoTitle>
-          <InfoText>
-            This site isn&apos;t just historic—it&apos;s charged. From its 1915 steel-and-concrete bones 
-            to the expansive glass windows built to flood the factory floor with light, it was 
-            once a monument to industrial power. Today, it&apos;s a living organism of creativity—filled 
-            with workshops, murals, and experimental technologies. It&apos;s where the lines between 
-            past and future blur… and where dragons might rest.
-          </InfoText>
+
 
           <InfoTitle>Join the Quest</InfoTitle>
           <InfoText>
             The dragon didn&apos;t disappear. It dispersed. Into fragments of inspiration, lost scrolls, 
             and ghost data hiding in plain sight.
           </InfoText>
+
+          <QuestSection>
+            <InfoText style={{ marginBottom: '1rem', fontWeight: '600', color: '#ffcc00' }}>
+              🏮 The Lantern of the Forgotten Gate
+            </InfoText>
+            <InfoText style={{ fontStyle: 'italic', color: '#e0e0e0', marginBottom: '1rem' }}>
+              I stand where cultures meet but borders blur,<br/>
+              My skin is inked in language old and new.<br/>
+              I do not speak, but many listen.<br/>
+              I welcome all, yet guard a clue.
+            </InfoText>
+            <InfoText style={{ color: '#cccccc', marginBottom: '1rem' }}>
+              Find me near the place where red rooftops bloom,<br/>
+              Where dragons once danced beneath paper moons.
+            </InfoText>
+            <InfoText style={{ fontWeight: '600', color: '#00ffff', marginBottom: '0.5rem' }}>
+              Solve my secret:
+            </InfoText>
+            <InfoText style={{ color: '#e0e0e0' }}>
+              What glows without fire, speaks without sound, and carries a city&apos;s memory all year round?
+            </InfoText>
+          </QuestSection>
           
           <QuestSection>
             <InfoText style={{ marginBottom: '1rem', fontWeight: '600', color: '#ffcc00' }}>

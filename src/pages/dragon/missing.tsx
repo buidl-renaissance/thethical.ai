@@ -17,7 +17,7 @@ const Container = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.typography.fontSize['6xl']};
+  font-size: 6rem;
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
   font-family: ${({ theme }) => theme.typography.fontFamily.mono};
   margin: 0 0 ${({ theme }) => theme.spacing[12]} 0;
@@ -41,7 +41,7 @@ const QRCodeImage = styled.img`
 `;
 
 const Subtitle = styled.p`
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize['6xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
   font-family: ${({ theme }) => theme.typography.fontFamily.mono};
   margin: ${({ theme }) => theme.spacing[6]} 0 0 0;
