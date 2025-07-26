@@ -322,16 +322,29 @@ export default function Dragon() {
     setStatus("loading");
     
     try {
-      // Here you would typically send the email to your backend
-      // For now, we'll simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email,
+          source: 'dragon-page'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Subscription failed');
+      }
       
       setStatus("success");
-      setMessage("You've been added to the quest! Check your email for updates.");
+      setMessage(data.message || "You've been added to the quest! Check your email for updates.");
       setEmail("");
-    } catch {
+    } catch (error) {
       setStatus("error");
-      setMessage("Something went wrong. Please try again.");
+      setMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
     }
   };
 
