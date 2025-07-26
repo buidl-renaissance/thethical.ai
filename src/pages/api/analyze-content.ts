@@ -1,5 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import OpenAI from 'openai';
+import { db } from '../../db';
+import { templates } from '../../db/schema';
 
 // Configure the body parser to accept larger payloads
 export const config = {
@@ -14,109 +16,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-interface WorkflowTemplate {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  icon: string;
-  steps: string[];
-  confidence: number;
-}
 
-// Predefined workflow templates
-const workflowTemplates: WorkflowTemplate[] = [
-  {
-    id: 'project-planning',
-    name: 'Project Planning',
-    description: 'Organize and structure a new project with clear milestones and deliverables.',
-    category: 'Project Management',
-    icon: '📋',
-    steps: [
-      'Define project scope and objectives',
-      'Create project timeline',
-      'Identify key stakeholders',
-      'Set up project tracking tools',
-      'Plan resource allocation'
-    ],
-    confidence: 0
-  },
-  {
-    id: 'marketing-campaign',
-    name: 'Marketing Campaign',
-    description: 'Launch a comprehensive marketing campaign across multiple channels.',
-    category: 'Marketing',
-    icon: '📢',
-    steps: [
-      'Define target audience',
-      'Create campaign messaging',
-      'Choose marketing channels',
-      'Set up tracking and analytics',
-      'Plan content calendar'
-    ],
-    confidence: 0
-  },
-  {
-    id: 'event-planning',
-    name: 'Event Planning',
-    description: 'Plan and organize a successful event from concept to execution.',
-    category: 'Events',
-    icon: '🎉',
-    steps: [
-      'Define event concept and goals',
-      'Set budget and timeline',
-      'Choose venue and date',
-      'Plan logistics and vendors',
-      'Create marketing materials'
-    ],
-    confidence: 0
-  },
-  {
-    id: 'product-development',
-    name: 'Product Development',
-    description: 'Bring a product idea from concept to market-ready solution.',
-    category: 'Product',
-    icon: '🚀',
-    steps: [
-      'Define product requirements',
-      'Create product roadmap',
-      'Design user experience',
-      'Develop MVP',
-      'Plan launch strategy'
-    ],
-    confidence: 0
-  },
-  {
-    id: 'content-creation',
-    name: 'Content Creation',
-    description: 'Create engaging content for blogs, social media, or marketing materials.',
-    category: 'Content',
-    icon: '✍️',
-    steps: [
-      'Research topics and keywords',
-      'Create content outline',
-      'Write and edit content',
-      'Add visuals and media',
-      'Plan distribution strategy'
-    ],
-    confidence: 0
-  },
-  {
-    id: 'research-analysis',
-    name: 'Research & Analysis',
-    description: 'Conduct thorough research and analysis on a topic or market.',
-    category: 'Research',
-    icon: '🔍',
-    steps: [
-      'Define research objectives',
-      'Gather data and sources',
-      'Analyze findings',
-      'Create insights report',
-      'Plan next steps'
-    ],
-    confidence: 0
-  }
-];
 
 export default async function handler(
   req: NextApiRequest,
@@ -127,12 +27,27 @@ export default async function handler(
   }
 
   try {
-    const { photoData, transcript } = req.body;
+    const { imageAnalysis, transcript } = req.body;
 
-    if (!photoData && !transcript) {
+    if (!imageAnalysis && !transcript) {
       return res.status(400).json({ 
         success: false, 
-        error: 'No photo or transcript data provided' 
+        error: 'No image analysis or transcript data provided' 
+      });
+    }
+
+    // Fetch templates from database
+    const dbTemplates = await db.select({
+      templateId: templates.templateId,
+      name: templates.name,
+      description: templates.description,
+      tag: templates.tag
+    }).from(templates);
+
+    if (dbTemplates.length === 0) {
+      return res.status(500).json({
+        success: false,
+        error: 'No templates found in database'
       });
     }
 
@@ -143,28 +58,37 @@ export default async function handler(
       contentToAnalyze += `Voice input: "${transcript}"\n\n`;
     }
     
-    if (photoData) {
-      contentToAnalyze += 'Image provided for context analysis.\n\n';
+    if (imageAnalysis) {
+      contentToAnalyze += `Image Analysis:
+- Description: ${imageAnalysis.description}
+- Objects: ${imageAnalysis.objects.join(', ')}
+- Text: ${imageAnalysis.text.join(', ')}
+- Colors: ${imageAnalysis.colors.join(', ')}
+- Mood: ${imageAnalysis.mood}
+- Context: ${imageAnalysis.context}
+- Suggestions: ${imageAnalysis.suggestions.join(', ')}
+
+`;
     }
+
+    // Create template list for analysis
+    const templateList = dbTemplates.map(t => 
+      `- ${t.templateId}: ${t.name} - ${t.description} (Tag: ${t.tag})`
+    ).join('\n');
 
     // Analyze content using OpenAI
     const analysisPrompt = `
-You are an AI assistant that analyzes user content (photos and voice transcripts) to suggest relevant workflow templates.
+You are an AI assistant that analyzes user content (image analysis and voice transcripts) to suggest relevant workflow templates.
 
 Content to analyze:
 ${contentToAnalyze}
 
-Available workflow categories:
-- Project Planning: For organizing and structuring projects
-- Marketing Campaign: For launching marketing initiatives
-- Event Planning: For organizing events and gatherings
-- Product Development: For developing products and features
-- Content Creation: For creating blogs, social media, and marketing content
-- Research & Analysis: For conducting research and analysis
+Available workflows:
+${templateList}
 
 Please analyze the content and:
 1. Provide a brief analysis of what the user is trying to accomplish
-2. Suggest the most relevant workflow templates with confidence scores (0-1)
+2. Suggest the most relevant workflows with confidence scores (0-1)
 3. Explain why each template is relevant
 
 Respond in JSON format:
@@ -172,7 +96,7 @@ Respond in JSON format:
   "analysis": "Brief analysis of the content and user intent",
   "templates": [
     {
-      "id": "template-id",
+      "templateId": "template-id",
       "confidence": 0.85,
       "reasoning": "Why this template is relevant"
     }
@@ -214,14 +138,16 @@ Respond in JSON format:
       };
     }
 
-    // Map the analysis results to our template structure
-    const suggestedTemplates = workflowTemplates.map(template => {
+    // Map the analysis results to our database template structure
+    const suggestedTemplates = dbTemplates.map(template => {
       const suggestedTemplate = parsedResult.templates?.find(
-        (t: { id: string; confidence: number }) => t.id === template.id
+        (t: { templateId: string; confidence: number }) => t.templateId === template.templateId
       );
       
       return {
-        ...template,
+        templateId: template.templateId,
+        name: template.name,
+        description: template.description,
         confidence: suggestedTemplate?.confidence || 0,
       };
     }).filter(template => template.confidence > 0.1)

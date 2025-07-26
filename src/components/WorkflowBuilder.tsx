@@ -16,6 +16,7 @@ interface WorkflowTemplate {
   category: string;
   icon: string;
   steps: string[];
+  questions?: string[];
   confidence: number;
 }
 
@@ -37,30 +38,9 @@ interface WorkflowBuilderProps {
 const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({ 
   template, 
   onWorkflowStart, 
-  onBack 
 }) => {
-  const [workflowSteps, setWorkflowSteps] = useState<WorkflowStep[]>(
-    template.steps.map((step, index) => ({
-      id: `step-${index}`,
-      title: step,
-      description: `Complete this step to move forward with your ${template.name.toLowerCase()}`,
-      completed: false,
-      estimatedTime: '30-60 min'
-    }))
-  );
-
   const [workflowName, setWorkflowName] = useState(`${template.name} - ${new Date().toLocaleDateString()}`);
   const [isStarting, setIsStarting] = useState(false);
-
-  const handleStepToggle = (stepId: string) => {
-    setWorkflowSteps(prev => 
-      prev.map(step => 
-        step.id === stepId 
-          ? { ...step, completed: !step.completed }
-          : step
-      )
-    );
-  };
 
   const handleStartWorkflow = async () => {
     setIsStarting(true);
@@ -71,7 +51,13 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
         id: `workflow-${Date.now()}`,
         templateId: template.id,
         name: workflowName,
-        steps: workflowSteps,
+        steps: template.steps.map((step, index) => ({
+          id: `step-${index}`,
+          title: step,
+          description: `Complete this step to move forward with your ${template.name.toLowerCase()}`,
+          completed: false,
+          estimatedTime: '30-60 min'
+        })),
         createdAt: new Date().toISOString(),
         status: 'active'
       };
@@ -87,20 +73,14 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
     }
   };
 
-  const completedSteps = workflowSteps.filter(step => step.completed).length;
-  const progressPercentage = (completedSteps / workflowSteps.length) * 100;
-
   return (
     <Container>
       <Header>
-        <BackButton onClick={onBack}>
-          ← Back to Templates
-        </BackButton>
         <TemplateInfo>
           <TemplateIcon>{template.icon}</TemplateIcon>
           <TemplateDetails>
             <TemplateName>{template.name}</TemplateName>
-            <TemplateCategory>{template.category}</TemplateCategory>
+            {/* <TemplateCategory>{template.category}</TemplateCategory> */}
           </TemplateDetails>
         </TemplateInfo>
       </Header>
@@ -121,33 +101,30 @@ const WorkflowBuilder: React.FC<WorkflowBuilderProps> = ({
           />
         </WorkflowSetupSection>
 
-        <StepsSection>
+        {template.questions && template.questions.length > 0 && (
+          <QuestionsSection>
+            <QuestionsTitle>Key Questions to Consider</QuestionsTitle>
+            <QuestionsList>
+              {template.questions.map((question, index) => (
+                <QuestionItem key={index}>
+                  <QuestionNumber>{index + 1}</QuestionNumber>
+                  <QuestionText>{question}</QuestionText>
+                </QuestionItem>
+              ))}
+            </QuestionsList>
+          </QuestionsSection>
+        )}
+
           <StepsTitle>Workflow Steps</StepsTitle>
-          <ProgressBar>
-            <ProgressFill progress={progressPercentage} />
-          </ProgressBar>
-          <ProgressText>
-            {completedSteps} of {workflowSteps.length} steps completed
-          </ProgressText>
           
           <StepsList>
-            {workflowSteps.map((step, index) => (
-              <StepItem key={step.id}>
-                <StepCheckbox
-                  type="checkbox"
-                  checked={step.completed}
-                  onChange={() => handleStepToggle(step.id)}
-                />
-                <StepContent>
-                  <StepNumber>{index + 1}</StepNumber>
-                  <StepTitle>{step.title}</StepTitle>
-                  <StepDescription>{step.description}</StepDescription>
-                  <StepTime>{step.estimatedTime}</StepTime>
-                </StepContent>
+            {template.steps.map((step, index) => (
+              <StepItem key={index}>
+                <StepNumber>{index + 1}</StepNumber>
+                <StepText>{step}</StepText>
               </StepItem>
             ))}
           </StepsList>
-        </StepsSection>
 
         <ActionSection>
           <StartButton 
@@ -167,6 +144,8 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing[6]};
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
 `;
 
 const Header = styled.div`
@@ -176,21 +155,6 @@ const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[8]};
   padding-bottom: ${({ theme }) => theme.spacing[4]};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  color: ${({ theme }) => theme.colors.accent};
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  cursor: pointer;
-  padding: ${({ theme }) => theme.spacing[2]};
-  border-radius: ${({ theme }) => theme.borderRadius.base};
-  transition: background-color ${({ theme }) => theme.transitions.fast};
-
-  &:hover {
-    background: ${({ theme }) => theme.colors.accent + '10'};
-  }
 `;
 
 const TemplateInfo = styled.div`
@@ -212,16 +176,6 @@ const TemplateName = styled.h2`
   margin: 0;
 `;
 
-const TemplateCategory = styled.span`
-  display: inline-block;
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
-  background: ${({ theme }) => theme.colors.secondaryAccent + '20'};
-  color: ${({ theme }) => theme.colors.secondaryAccent};
-  border-radius: ${({ theme }) => theme.borderRadius.base};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
-`;
-
 const Content = styled.div`
   display: flex;
   flex-direction: column;
@@ -229,9 +183,6 @@ const Content = styled.div`
 `;
 
 const DescriptionSection = styled.div`
-  background: ${({ theme }) => theme.colors.backgroundSecondary};
-  padding: ${({ theme }) => theme.spacing[6]};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
 `;
 
 const DescriptionTitle = styled.h3`
@@ -242,15 +193,12 @@ const DescriptionTitle = styled.h3`
 `;
 
 const DescriptionText = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
+  color: ${({ theme }) => theme.colors.primary};
+  opacity: 0.9;
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
 `;
 
 const WorkflowSetupSection = styled.div`
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[6]};
 `;
 
 const SetupTitle = styled.h3`
@@ -266,19 +214,19 @@ const NameInput = styled.input`
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.base};
   font-size: ${({ theme }) => theme.typography.fontSize.base};
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  color: ${({ theme }) => theme.colors.primary};
   transition: border-color ${({ theme }) => theme.transitions.fast};
 
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.accent};
   }
-`;
 
-const StepsSection = styled.div`
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.xl};
-  padding: ${({ theme }) => theme.spacing[6]};
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.primary};
+    opacity: 0.6;
+  }
 `;
 
 const StepsTitle = styled.h3`
@@ -288,55 +236,82 @@ const StepsTitle = styled.h3`
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
-const ProgressBar = styled.div`
-  width: 100%;
-  height: 8px;
-  background: ${({ theme }) => theme.colors.border};
-  border-radius: ${({ theme }) => theme.borderRadius.base};
-  overflow: hidden;
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
+const QuestionsSection = styled.div`
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
 `;
 
-const ProgressFill = styled.div<{ progress: number }>`
-  height: 100%;
-  background: ${({ theme }) => theme.colors.accent};
-  width: ${({ progress }) => progress}%;
-  transition: width ${({ theme }) => theme.transitions.normal};
-`;
-
-const ProgressText = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+const QuestionsTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.primary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
+`;
+
+const QuestionsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+const QuestionItem = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing[3]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background: ${({ theme }) => theme.colors.primary};
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.accent};
+    background: ${({ theme }) => theme.colors.accent};
+  }
+`;
+
+const QuestionNumber = styled.span`
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: ${({ theme }) => theme.colors.secondaryAccent};
+  color: white;
+  border-radius: 50%;
+  text-align: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  flex-shrink: 0;
+`;
+
+const QuestionText = styled.p`
+  color: ${({ theme }) => theme.colors.primary};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  margin: 0;
 `;
 
 const StepsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[4]};
+  gap: ${({ theme }) => theme.spacing[3]};
 `;
 
 const StepItem = styled.div`
   display: flex;
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing[3]};
-  padding: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background: ${({ theme }) => theme.colors.backgroundSecondary};
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
     border-color: ${({ theme }) => theme.colors.accent};
-    background: ${({ theme }) => theme.colors.accent + '05'};
+    background: ${({ theme }) => theme.colors.accent};
   }
-`;
-
-const StepCheckbox = styled.input`
-  margin-top: ${({ theme }) => theme.spacing[1]};
-`;
-
-const StepContent = styled.div`
-  flex: 1;
 `;
 
 const StepNumber = styled.span`
@@ -349,31 +324,14 @@ const StepNumber = styled.span`
   text-align: center;
   font-size: ${({ theme }) => theme.typography.fontSize.sm};
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
+  flex-shrink: 0;
 `;
 
-const StepTitle = styled.h4`
-  font-size: ${({ theme }) => theme.typography.fontSize.base};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+const StepText = styled.p`
   color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing[1]};
-`;
-
-const StepDescription = styled.p`
-  color: ${({ theme }) => theme.colors.textSecondary};
-  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
-`;
-
-const StepTime = styled.span`
-  display: inline-block;
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
-  background: ${({ theme }) => theme.colors.secondaryAccent + '20'};
-  color: ${({ theme }) => theme.colors.secondaryAccent};
-  border-radius: ${({ theme }) => theme.borderRadius.base};
-  font-size: ${({ theme }) => theme.typography.fontSize.xs};
-  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  margin: 0;
 `;
 
 const ActionSection = styled.div`

@@ -5,6 +5,7 @@ import Transcriber from "../components/Transcriber";
 import Camera from "@/components/Camera";
 import WorkflowEngine from "@/components/WorkflowEngine";
 import WorkflowBuilder from "@/components/WorkflowBuilder";
+import TemplateSelector from "@/components/TemplateSelector";
 import Image from "next/image";
 
 interface WorkflowTemplate {
@@ -32,6 +33,16 @@ interface Workflow {
   steps: WorkflowStep[];
   createdAt: string;
   status: string;
+}
+
+interface ImageAnalysisResult {
+  description: string;
+  objects: string[];
+  text: string[];
+  colors: string[];
+  mood: string;
+  context: string;
+  suggestions: string[];
 }
 
 // Styled Components using the Clarity theme
@@ -133,11 +144,88 @@ const InstructionsText = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.xs};
 `;
 
+const AnalysisContainer = styled.div`
+  background: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
+  margin: ${({ theme }) => theme.spacing[4]} 0;
+  box-shadow: ${({ theme }) => theme.shadows.sm};
+`;
+
+const AnalysisTitle = styled.h3`
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  color: ${({ theme }) => theme.colors.primary};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+`;
+
+const AnalysisSection = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+`;
+
+const AnalysisLabel = styled.span`
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  display: block;
+  margin-bottom: ${({ theme }) => theme.spacing[1]};
+`;
+
+const AnalysisContent = styled.div`
+  color: ${({ theme }) => theme.colors.textSecondary};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+`;
+
+const TagList = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: ${({ theme }) => theme.spacing[2]};
+  margin-top: ${({ theme }) => theme.spacing[1]};
+`;
+
+const Tag = styled.span`
+  background: ${({ theme }) => theme.colors.accent};
+  color: ${({ theme }) => theme.colors.textInverse};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+`;
+
+const ModeToggleContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[4]};
+  margin: ${({ theme }) => theme.spacing[6]} 0;
+`;
+
+const ModeToggleButton = styled.button<{ active: boolean }>`
+  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[6]}`};
+  border: 2px solid ${({ theme, active }) => 
+    active ? theme.colors.accent : theme.colors.border};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  background: ${({ theme, active }) => 
+    active ? theme.colors.accent : theme.colors.white};
+  color: ${({ theme, active }) => 
+    active ? theme.colors.textInverse : theme.colors.textPrimary};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.medium};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.normal};
+
+  &:hover {
+    border-color: ${({ theme }) => theme.colors.accent};
+    background: ${({ theme, active }) => 
+      active ? theme.colors.accent : theme.colors.accent + '10'};
+  }
+`;
+
 export default function Grow() {
   const [transcript, setTranscript] = React.useState("");
   const [userImage, setUserImage] = React.useState("");
+  const [imageAnalysis, setImageAnalysis] = React.useState<ImageAnalysisResult | null>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState<WorkflowTemplate | null>(null);
   const [activeWorkflow, setActiveWorkflow] = React.useState<Workflow | null>(null);
+  const [showTemplateSelector, setShowTemplateSelector] = React.useState(false);
 
   const handleTranscriptReady = (newTranscript: string) => {
     setTranscript(newTranscript);
@@ -149,6 +237,10 @@ export default function Grow() {
 
   const setError = (error: string) => {
     console.error(error);
+  };
+
+  const handleImageAnalysis = (analysis: ImageAnalysisResult) => {
+    setImageAnalysis(analysis);
   };
 
   const handleTemplateSelect = (template: WorkflowTemplate) => {
@@ -189,9 +281,73 @@ export default function Grow() {
           <Section>
             <Instructions>
               <InstructionsText>The images you provide will be used to provide context for your ideas. Upload as many as you want.</InstructionsText>
-              <Camera setUserImage={setUserImage} setError={setError} generateImage={generateImage} />
+              <Camera 
+                setUserImage={setUserImage} 
+                setError={setError} 
+                generateImage={generateImage}
+                onImageAnalysis={handleImageAnalysis}
+              />
               {userImage && (
                 <Image src={userImage} alt="User Image" width={256} height={256} />
+              )}
+              
+              {imageAnalysis && (
+                <AnalysisContainer>
+                  <AnalysisTitle>Image Analysis</AnalysisTitle>
+                  
+                  <AnalysisSection>
+                    <AnalysisLabel>Description</AnalysisLabel>
+                    <AnalysisContent>{imageAnalysis.description}</AnalysisContent>
+                  </AnalysisSection>
+                  
+                  <AnalysisSection>
+                    <AnalysisLabel>Objects Detected</AnalysisLabel>
+                    <TagList>
+                      {imageAnalysis.objects.map((object, index) => (
+                        <Tag key={index}>{object}</Tag>
+                      ))}
+                    </TagList>
+                  </AnalysisSection>
+                  
+                  {imageAnalysis.text.length > 0 && (
+                    <AnalysisSection>
+                      <AnalysisLabel>Text Found</AnalysisLabel>
+                      <TagList>
+                        {imageAnalysis.text.map((text, index) => (
+                          <Tag key={index}>{text}</Tag>
+                        ))}
+                      </TagList>
+                    </AnalysisSection>
+                  )}
+                  
+                  <AnalysisSection>
+                    <AnalysisLabel>Colors</AnalysisLabel>
+                    <TagList>
+                      {imageAnalysis.colors.map((color, index) => (
+                        <Tag key={index}>{color}</Tag>
+                      ))}
+                    </TagList>
+                  </AnalysisSection>
+                  
+                  <AnalysisSection>
+                    <AnalysisLabel>Mood</AnalysisLabel>
+                    <AnalysisContent>{imageAnalysis.mood}</AnalysisContent>
+                  </AnalysisSection>
+                  
+                  <AnalysisSection>
+                    <AnalysisLabel>Context</AnalysisLabel>
+                    <AnalysisContent>{imageAnalysis.context}</AnalysisContent>
+                  </AnalysisSection>
+                  
+                  <AnalysisSection>
+                    <AnalysisLabel>Suggestions</AnalysisLabel>
+                    <TagList>
+                      {imageAnalysis.suggestions.map((suggestion, index) => (
+                        <Tag key={index}>{suggestion}</Tag>
+                      ))}
+                    </TagList>
+                  </AnalysisSection>
+                </AnalysisContainer>
               )}
             </Instructions>
           </Section>
@@ -215,12 +371,37 @@ export default function Grow() {
             )}
           </Section>
 
+          {/* Mode Toggle */}
+          <Section>
+            <ModeToggleContainer>
+              <ModeToggleButton
+                active={!showTemplateSelector}
+                onClick={() => setShowTemplateSelector(false)}
+              >
+                AI-Powered Workflows
+              </ModeToggleButton>
+              <ModeToggleButton
+                active={showTemplateSelector}
+                onClick={() => setShowTemplateSelector(true)}
+              >
+                Browse Templates
+              </ModeToggleButton>
+            </ModeToggleContainer>
+          </Section>
+
+          {/* Template Selector */}
+          {showTemplateSelector && (
+            <TemplateSelector onTemplateSelect={handleTemplateSelect} />
+          )}
+
           {/* Workflow Engine */}
-          <WorkflowEngine
-            photoData={userImage}
-            transcript={transcript}
-            onTemplateSelect={handleTemplateSelect}
-          />
+          {!showTemplateSelector && (
+            <WorkflowEngine
+              photoData={userImage}
+              transcript={transcript}
+              onTemplateSelect={handleTemplateSelect}
+            />
+          )}
 
           {/* Workflow Builder */}
           {selectedTemplate && (

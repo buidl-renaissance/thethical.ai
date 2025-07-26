@@ -39,29 +39,67 @@ const ButtonContainer = styled.div`
   justify-content: center;
 `;
 
+interface ImageAnalysisResult {
+  description: string;
+  objects: string[];
+  text: string[];
+  colors: string[];
+  mood: string;
+  context: string;
+  suggestions: string[];
+}
+
 interface CameraProps {
   setUserImage: (image: string) => void;
   setError: (error: string) => void;
   generateImage: (image: string) => Promise<void>;
+  onImageAnalysis?: (analysis: ImageAnalysisResult) => void;
 }
 
-const Camera: React.FC<CameraProps> = ({ setUserImage, setError, generateImage }) => {
+const Camera: React.FC<CameraProps> = ({ setUserImage, setError, generateImage, onImageAnalysis }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const analyzeImage = async (imageData: string): Promise<ImageAnalysisResult> => {
+    try {
+      const response = await fetch('/api/analyze-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ imageData }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to analyze image');
+      }
+
+      const result = await response.json();
+      return result.analysis;
+    } catch {
+      throw new Error('Failed to analyze image');
+    }
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         const imageData = e.target?.result as string;
-        cropImageToWidth(imageData, 600)
-          .then((croppedImage) => {
-            setUserImage(croppedImage);
-            return generateImage(croppedImage);
-          })
-          .catch((err) => {
-            setError(err instanceof Error ? err.message : "Failed to process image");
-          });
+        try {
+          const croppedImage = await cropImageToWidth(imageData, 600);
+          setUserImage(croppedImage);
+          
+          // Analyze the image
+          if (onImageAnalysis) {
+            const analysis = await analyzeImage(croppedImage);
+            onImageAnalysis(analysis);
+          }
+          
+          await generateImage(croppedImage);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : "Failed to process image");
+        }
       };
       reader.readAsDataURL(file);
     }
