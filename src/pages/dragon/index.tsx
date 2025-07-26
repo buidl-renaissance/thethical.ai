@@ -369,6 +369,35 @@ export default function Dragon() {
             technologists, and makers.
           </InfoText>
 
+          <EmailSection>
+            <EmailTitle>Join the Dragon Hunters</EmailTitle>
+            <EmailDescription>
+              Receive updates on the quest, new discoveries, and exclusive insights into the world of ethical AI.
+            </EmailDescription>
+            
+            <EmailForm onSubmit={handleSubmit}>
+              <EmailInput
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={status === "loading"}
+              />
+              <SubmitButton type="submit" disabled={status === "loading"}>
+                {status === "loading" ? "Joining..." : "Join Quest"}
+              </SubmitButton>
+            </EmailForm>
+            
+            {status === "success" && (
+              <SuccessMessage>{message}</SuccessMessage>
+            )}
+            
+            {status === "error" && (
+              <ErrorMessage>{message}</ErrorMessage>
+            )}
+          </EmailSection>
+
           <InfoTitle>Distinguishing Features</InfoTitle>
           <FeatureList>
             <FeatureItem>
@@ -432,35 +461,6 @@ export default function Dragon() {
             <Tag>#DetroitAwakens</Tag>
           </Hashtags>
         </InfoSection>
-
-        <EmailSection>
-          <EmailTitle>Join the Dragon Hunters</EmailTitle>
-          <EmailDescription>
-            Receive updates on the quest, new discoveries, and exclusive insights into the world of ethical AI.
-          </EmailDescription>
-          
-          <EmailForm onSubmit={handleSubmit}>
-            <EmailInput
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={status === "loading"}
-            />
-            <SubmitButton type="submit" disabled={status === "loading"}>
-              {status === "loading" ? "Joining..." : "Join Quest"}
-            </SubmitButton>
-          </EmailForm>
-          
-          {status === "success" && (
-            <SuccessMessage>{message}</SuccessMessage>
-          )}
-          
-          {status === "error" && (
-            <ErrorMessage>{message}</ErrorMessage>
-          )}
-        </EmailSection>
       </Container>
     </>
   );
