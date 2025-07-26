@@ -148,7 +148,7 @@ export default function DragonFound() {
 
         <ImageContainer>
           <video 
-            src="/videos/dragon-peterboro.mov"
+            src="https://dpop.nyc3.digitaloceanspaces.com/uploads/4bFX0uYOMf75972vRDpT11tj9Q2MGRkz8IA8u6hj.mov"
             controls
             autoPlay
             muted
@@ -169,7 +169,7 @@ export default function DragonFound() {
           
           <ImageContainer style={{ marginTop: '2rem', marginBottom: '2rem' }}>
             <video 
-              src="/videos/dragon-russell.mov"
+              src="https://dpop.nyc3.digitaloceanspaces.com/uploads/NB6IOxz1k58KNJbhkdBlNo54d7R84gQQmQxPtsEG.mov"
               controls
               autoPlay
               muted
