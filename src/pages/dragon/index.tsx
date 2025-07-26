@@ -443,6 +443,7 @@ export default function Dragon() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [locationError, setLocationError] = useState("");
+  const [isFound, setIsFound] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -482,9 +483,23 @@ export default function Dragon() {
     }
   };
 
+  // Calculate distance between two coordinates in feet
+  const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+    const R = 20902231; // Earth's radius in feet
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  };
+
   const handleGetLocation = () => {
     setLocationStatus("loading");
     setLocationError("");
+    setIsFound(false);
     
     if (!navigator.geolocation) {
       setLocationStatus("error");
@@ -497,6 +512,15 @@ export default function Dragon() {
         const { latitude, longitude } = position.coords;
         setLocation({ lat: latitude, lng: longitude });
         setLocationStatus("success");
+        
+        // Check if within 30 feet of target location
+        const targetLat = 42.344417;
+        const targetLng = -83.060260;
+        const distance = calculateDistance(latitude, longitude, targetLat, targetLng);
+        
+        if (distance <= 30) {
+          setIsFound(true);
+        }
       },
       (error) => {
         setLocationStatus("error");
@@ -535,7 +559,15 @@ export default function Dragon() {
       <Container>
         {locationStatus === "success" && location && (
           <TopCoordinates>
-            📍 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+            {isFound ? (
+              <>
+                🎉 LANTERN FOUND! 🎉
+                <br />
+                📍 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+              </>
+            ) : (
+              `📍 ${location.lat.toFixed(6)}, ${location.lng.toFixed(6)}`
+            )}
           </TopCoordinates>
         )}
         
@@ -546,11 +578,25 @@ export default function Dragon() {
         </Description>
 
         <ImageContainer>
-          <img 
-            src="/images/dragon.png" 
-            alt="Missing Dragon"
-            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-          />
+          {isFound ? (
+            <video 
+              src="https://dpop.nyc3.digitaloceanspaces.com/uploads/4bFX0uYOMf75972vRDpT11tj9Q2MGRkz8IA8u6hj.mov"
+              controls
+              autoPlay
+              muted
+              loop
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            >
+              <track kind="captions" />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <img 
+              src="/images/dragon.png" 
+              alt="Missing Dragon"
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
+          )}
         </ImageContainer>
 
         <InfoSection>
