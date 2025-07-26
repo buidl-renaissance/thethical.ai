@@ -419,7 +419,7 @@ export default function Dragon() {
         <Title>The Mystery of the Missing Dragon</Title>
         
         <Description>
-          Somewhere between steel beams and stardust, a guardian of digital wisdom has vanished...
+          Join the search for a guardian of digital wisdom—and discover the future of ethical AI
         </Description>
 
         <ImageContainer>
@@ -432,14 +432,14 @@ export default function Dragon() {
 
         <InfoSection>
           <InfoText style={{ textAlign: 'center', marginBottom: '2rem', fontStyle: 'italic', color: '#cccccc' }}>
-            The dragon&apos;s trail grows cold, but hope remains. Join fellow seekers in this digital quest— 
-            where every email becomes a beacon, every subscriber a guardian of the flame.
+            Sign up below to receive exclusive updates about the dragon quest, ethical AI discoveries, 
+            and behind-the-scenes insights from Detroit&apos;s creative renaissance.
           </InfoText>
           
           <EmailSection>
-            <EmailTitle>Join the Dragon Hunters</EmailTitle>
+            <EmailTitle>Get Dragon Quest Updates</EmailTitle>
             <EmailDescription>
-              Receive updates on the quest, new discoveries, and exclusive insights into the world of ethical AI.
+              Enter your email to receive exclusive updates, new discoveries, and insights about ethical AI development.
             </EmailDescription>
             
             <EmailForm onSubmit={handleSubmit}>
@@ -452,7 +452,7 @@ export default function Dragon() {
                 disabled={status === "loading"}
               />
               <SubmitButton type="submit" disabled={status === "loading"}>
-                {status === "loading" ? "Joining..." : "Join Quest"}
+                {status === "loading" ? "Subscribing..." : "Subscribe"}
               </SubmitButton>
             </EmailForm>
             
@@ -465,32 +465,33 @@ export default function Dragon() {
             )}
           </EmailSection>
 
-          <InfoTitle>Distinguishing Features</InfoTitle>
+          <InfoTitle>What You&apos;ll Discover</InfoTitle>
           <FeatureList>
             <FeatureItem>
               <Emoji>✨</Emoji>
-              <span>Glows with an ethereal, digital aura seen only by those tuned into the flow</span>
+              <span>Exclusive updates on the dragon quest and ethical AI development</span>
             </FeatureItem>
             <FeatureItem>
               <Emoji>📜</Emoji>
-              <span>Carries ancient scrolls inscribed with the original Ethical AI Principles</span>
+              <span>Behind-the-scenes insights from Detroit&apos;s creative renaissance</span>
             </FeatureItem>
             <FeatureItem>
               <Emoji>🧠</Emoji>
-              <span>Speaks in binary and metaphor, translating machine logic into human wisdom</span>
+              <span>Early access to new ethical AI principles and discoveries</span>
             </FeatureItem>
             <FeatureItem>
               <Emoji>🐾</Emoji>
-              <span>Leaves trails of executable poetry behind—code that compiles meaning</span>
+              <span>Special content about the intersection of technology and human creativity</span>
             </FeatureItem>
           </FeatureList>
 
 
 
-          <InfoTitle>Join the Quest</InfoTitle>
+          <InfoTitle>The Dragon Quest</InfoTitle>
           <InfoText>
-            The dragon didn&apos;t disappear. It dispersed. Into fragments of inspiration, lost scrolls, 
-            and ghost data hiding in plain sight.
+            This isn&apos;t just a story—it&apos;s a real exploration of how ethical AI can emerge from 
+            the intersection of human creativity and technological innovation. The dragon represents 
+            the principles that guide responsible AI development.
           </InfoText>
 
           <QuestSection>
@@ -517,23 +518,23 @@ export default function Dragon() {
           
           <QuestSection>
             <InfoText style={{ marginBottom: '1rem', fontWeight: '600', color: '#ffcc00' }}>
-              If you:
+              This quest is for you if you:
             </InfoText>
             <QuestList>
-              <QuestItem>Discover symbols in chalk on freight doors</QuestItem>
-              <QuestItem>Hear whispers of protocol in the wind</QuestItem>
-              <QuestItem>Feel called to build technology with heart...</QuestItem>
+              <QuestItem>Care about the future of ethical AI development</QuestItem>
+              <QuestItem>Want to explore the intersection of technology and human creativity</QuestItem>
+              <QuestItem>Are interested in Detroit&apos;s role in the AI renaissance</QuestItem>
             </QuestList>
             <InfoText style={{ marginTop: '1.5rem', fontStyle: 'italic', color: '#00ffff' }}>
-              You&apos;ve already been chosen.
+              Join us in building a better future for AI.
             </InfoText>
           </QuestSection>
           
           <InfoText style={{ textAlign: 'center', fontSize: '1.1rem', fontWeight: '600' }}>
-            🧩 Find the fragments. Reassemble the scrolls. Carry the fire.
+            🧩 Subscribe above to stay connected with the quest
           </InfoText>
           <InfoText style={{ textAlign: 'center', marginTop: '1rem' }}>
-            The future of ethical AI—and the soul of our digital age—may depend on it.
+            Be part of the movement shaping the future of ethical AI.
           </InfoText>
 
           <Hashtags>
