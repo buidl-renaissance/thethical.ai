@@ -245,6 +245,79 @@ const Tag = styled.span`
   border: 1px solid rgba(0, 255, 136, 0.2);
 `;
 
+const LocationButton = styled.button`
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[6]};
+  background: linear-gradient(135deg, rgba(255, 204, 0, 0.2), rgba(255, 204, 0, 0.1));
+  border: 1px solid rgba(255, 204, 0, 0.4);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: #ffcc00;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(255, 204, 0, 0.3), rgba(255, 204, 0, 0.2));
+    border-color: rgba(255, 204, 0, 0.6);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const LocationInfo = styled.div`
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255, 204, 0, 0.1);
+  border: 1px solid rgba(255, 204, 0, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: #ffcc00;
+  text-align: center;
+`;
+
+const LocationError = styled.div`
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: #ff4444;
+  text-align: center;
+`;
+
+const TopCoordinates = styled.div`
+  position: fixed;
+  top: ${({ theme }) => theme.spacing[4]};
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 204, 0, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[4]};
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  color: #ffcc00;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+  
+  @media (min-width: 768px) {
+    top: ${({ theme }) => theme.spacing[6]};
+    padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[6]};
+    font-size: ${({ theme }) => theme.typography.fontSize.base};
+  }
+`;
+
 const EmailSection = styled.div`
   margin-top: ${({ theme }) => theme.spacing[6]};
   padding: ${({ theme }) => theme.spacing[4]};
@@ -367,6 +440,9 @@ export default function Dragon() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [locationError, setLocationError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -406,6 +482,47 @@ export default function Dragon() {
     }
   };
 
+  const handleGetLocation = () => {
+    setLocationStatus("loading");
+    setLocationError("");
+    
+    if (!navigator.geolocation) {
+      setLocationStatus("error");
+      setLocationError("Geolocation is not supported by this browser.");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocation({ lat: latitude, lng: longitude });
+        setLocationStatus("success");
+      },
+      (error) => {
+        setLocationStatus("error");
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            setLocationError("Location access denied. Please enable location services.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            setLocationError("Location information unavailable.");
+            break;
+          case error.TIMEOUT:
+            setLocationError("Location request timed out.");
+            break;
+          default:
+            setLocationError("An unknown error occurred.");
+            break;
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  };
+
   return (
     <>
       <Head>
@@ -416,6 +533,12 @@ export default function Dragon() {
       </Head>
 
       <Container>
+        {locationStatus === "success" && location && (
+          <TopCoordinates>
+            📍 {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+          </TopCoordinates>
+        )}
+        
         <Title>The Mystery of the Missing Dragon</Title>
         
         <Description>
@@ -514,6 +637,29 @@ export default function Dragon() {
             <InfoText style={{ color: '#e0e0e0' }}>
               What glows without fire, speaks without sound, and carries a city&apos;s memory all year round?
             </InfoText>
+            
+            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+              <LocationButton 
+                onClick={handleGetLocation}
+                disabled={locationStatus === "loading"}
+              >
+                {locationStatus === "loading" ? "Locating..." : "📍 Activate Locator"}
+              </LocationButton>
+              
+              {locationStatus === "success" && location && (
+                <LocationInfo>
+                  📍 Location Found: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                  <br />
+                  <small>Use this to navigate to the lantern&apos;s location</small>
+                </LocationInfo>
+              )}
+              
+              {locationStatus === "error" && (
+                <LocationError>
+                  ❌ {locationError}
+                </LocationError>
+              )}
+            </div>
           </QuestSection>
           
           <QuestSection>

@@ -147,12 +147,40 @@ export default function DragonFound() {
         </Description>
 
         <ImageContainer>
-          <img 
-            src="/images/russell-industrial-center.jpg" 
-            alt="Russell Industrial Center"
+          <video 
+            src="/videos/dragon-peterboro.mov"
+            controls
+            autoPlay
+            muted
+            loop
             style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
-          />
+          >
+            <track kind="captions" />
+            Your browser does not support the video tag.
+          </video>
         </ImageContainer>
+
+        <InfoSection>
+          <InfoTitle>Where the Dragon Came From</InfoTitle>
+          <InfoText>
+            Before finding its sanctuary, the dragon emerged from the heart of Detroit&apos;s industrial past— 
+            the Russell Industrial Center, where creativity and technology first began to dance together.
+          </InfoText>
+          
+          <ImageContainer style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+            <video 
+              src="/videos/dragon-russell.mov"
+              controls
+              autoPlay
+              muted
+              loop
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
+            >
+              <track kind="captions" />
+              Your browser does not support the video tag.
+            </video>
+          </ImageContainer>
+        </InfoSection>
 
         <InfoSection>
           <InfoTitle>The Russell Industrial Center: A Historic Factory Turned Creative Haven</InfoTitle>
