@@ -518,7 +518,7 @@ export default function Dragon() {
         const targetLng = -83.060260;
         const distance = calculateDistance(latitude, longitude, targetLat, targetLng);
         
-        if (distance <= 30) {
+        if (distance <= 100) {
           setIsFound(true);
         }
       },
