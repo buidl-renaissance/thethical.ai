@@ -1,0 +1,291 @@
+import Head from "next/head";
+import styled from "styled-components";
+
+const Container = styled.div`
+  min-height: 100vh;
+  background: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  font-family: 'IBM Plex Serif', serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[4]};
+  position: relative;
+  
+  @media (min-width: 768px) {
+    padding: ${({ theme }) => theme.spacing[8]};
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/images/noise.png');
+    opacity: 0.03;
+    pointer-events: none;
+  }
+`;
+
+const Title = styled.h1`
+  font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  text-align: center;
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+`;
+
+const Description = styled.div`
+  max-width: 800px;
+  margin: 0 auto ${({ theme }) => theme.spacing[8]};
+  text-align: center;
+  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  line-height: 1.6;
+  color: #cccccc;
+  font-weight: 400;
+`;
+
+const ImageContainer = styled.div`
+  margin: ${({ theme }) => theme.spacing[8]} 0;
+  position: relative;
+  width: 300px;
+  height: 300px;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(0,255,255,0.1) 0%, rgba(0,255,255,0) 70%);
+    pointer-events: none;
+  }
+`;
+
+const InfoSection = styled.section`
+  margin-top: ${({ theme }) => theme.spacing[6]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.15);
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  width: 100%;
+  max-width: 900px;
+  backdrop-filter: blur(10px);
+  
+  @media (min-width: 768px) {
+    margin-top: ${({ theme }) => theme.spacing[8]};
+    padding: ${({ theme }) => theme.spacing[8]};
+  }
+`;
+
+const InfoTitle = styled.h2`
+  font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+  margin-top: ${({ theme }) => theme.spacing[8]};
+  color: #ffcc00;
+  line-height: 1.3;
+  
+  &:first-child {
+    margin-top: 0;
+  }
+`;
+
+const InfoText = styled.p`
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+  font-family: 'IBM Plex Serif', serif;
+  color: #e0e0e0;
+  line-height: 1.8;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  font-weight: 400;
+`;
+
+const FeatureList = styled.div`
+  margin: ${({ theme }) => theme.spacing[6]} 0;
+  padding-left: ${({ theme }) => theme.spacing[6]};
+`;
+
+const FeatureItem = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  font-family: 'IBM Plex Serif', serif;
+  color: #e0e0e0;
+  line-height: 1.7;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  display: flex;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing[3]};
+`;
+
+const Emoji = styled.span`
+  font-size: 1.2em;
+  flex-shrink: 0;
+  margin-top: 2px;
+`;
+
+const QuestSection = styled.div`
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  padding: ${({ theme }) => theme.spacing[4]};
+  margin: ${({ theme }) => theme.spacing[4]} 0;
+  
+  @media (min-width: 768px) {
+    padding: ${({ theme }) => theme.spacing[6]};
+    margin: ${({ theme }) => theme.spacing[6]} 0;
+  }
+`;
+
+const QuestList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: ${({ theme }) => theme.spacing[4]} 0;
+`;
+
+const QuestItem = styled.li`
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+  padding-left: ${({ theme }) => theme.spacing[4]};
+  position: relative;
+  font-family: 'IBM Plex Serif', serif;
+  color: #e0e0e0;
+  line-height: 1.6;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  
+  &::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #00ffff;
+    font-weight: bold;
+  }
+`;
+
+const Hashtags = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[3]};
+  flex-wrap: wrap;
+  margin-top: ${({ theme }) => theme.spacing[8]};
+  font-family: 'Share Tech Mono', monospace;
+  justify-content: center;
+`;
+
+const Tag = styled.span`
+  color: #00ff88;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+  padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[3]};
+  background: rgba(0, 255, 136, 0.1);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  border: 1px solid rgba(0, 255, 136, 0.2);
+`;
+
+export default function Dragon() {
+  return (
+    <>
+      <Head>
+        <title>The Missing Dragon - The Ethical AI</title>
+        <meta name="description" content="An urgent call from the heart of Detroit's creative engine - a guardian of digital wisdom has vanished" />
+        <link rel="icon" href="/favicon.ico" />
+        <link href="https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=IBM+Plex+Serif:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+      </Head>
+
+      <Container>
+        <Title>The Mystery of the Missing Dragon</Title>
+        
+        <Description>
+          Somewhere between steel beams and stardust, a guardian of digital wisdom has vanished...
+        </Description>
+
+        <ImageContainer>
+          <img 
+            src="/images/dragon.png" 
+            alt="Missing Dragon"
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
+        </ImageContainer>
+
+        <InfoSection>
+          <InfoTitle>Last Known Sighting: A Historic Factory Turned Creative Haven</InfoTitle>
+          <InfoText>
+            Deep within a sprawling 2-million-square-foot complex on Clay Street in Detroit, 
+            the dragon was last seen drifting through concrete corridors filled with the hum of creation. 
+            Once the beating heart of the auto industry, this seven-building fortress—designed by a 
+            legendary industrial architect—has since been reborn as a sanctuary for artists, 
+            technologists, and makers.
+          </InfoText>
+
+          <InfoTitle>Distinguishing Features</InfoTitle>
+          <FeatureList>
+            <FeatureItem>
+              <Emoji>✨</Emoji>
+              <span>Glows with an ethereal, digital aura seen only by those tuned into the flow</span>
+            </FeatureItem>
+            <FeatureItem>
+              <Emoji>📜</Emoji>
+              <span>Carries ancient scrolls inscribed with the original Ethical AI Principles</span>
+            </FeatureItem>
+            <FeatureItem>
+              <Emoji>🧠</Emoji>
+              <span>Speaks in binary and metaphor, translating machine logic into human wisdom</span>
+            </FeatureItem>
+            <FeatureItem>
+              <Emoji>🐾</Emoji>
+              <span>Leaves trails of executable poetry behind—code that compiles meaning</span>
+            </FeatureItem>
+          </FeatureList>
+
+          <InfoTitle>A Place of Power</InfoTitle>
+          <InfoText>
+            This site isn&apos;t just historic—it&apos;s charged. From its 1915 steel-and-concrete bones 
+            to the expansive glass windows built to flood the factory floor with light, it was 
+            once a monument to industrial power. Today, it&apos;s a living organism of creativity—filled 
+            with workshops, murals, and experimental technologies. It&apos;s where the lines between 
+            past and future blur… and where dragons might rest.
+          </InfoText>
+
+          <InfoTitle>Join the Quest</InfoTitle>
+          <InfoText>
+            The dragon didn&apos;t disappear. It dispersed. Into fragments of inspiration, lost scrolls, 
+            and ghost data hiding in plain sight.
+          </InfoText>
+          
+          <QuestSection>
+            <InfoText style={{ marginBottom: '1rem', fontWeight: '600', color: '#ffcc00' }}>
+              If you:
+            </InfoText>
+            <QuestList>
+              <QuestItem>Discover symbols in chalk on freight doors</QuestItem>
+              <QuestItem>Hear whispers of protocol in the wind</QuestItem>
+              <QuestItem>Feel called to build technology with heart...</QuestItem>
+            </QuestList>
+            <InfoText style={{ marginTop: '1.5rem', fontStyle: 'italic', color: '#00ffff' }}>
+              You&apos;ve already been chosen.
+            </InfoText>
+          </QuestSection>
+          
+          <InfoText style={{ textAlign: 'center', fontSize: '1.1rem', fontWeight: '600' }}>
+            🧩 Find the fragments. Reassemble the scrolls. Carry the fire.
+          </InfoText>
+          <InfoText style={{ textAlign: 'center', marginTop: '1rem' }}>
+            The future of ethical AI—and the soul of our digital age—may depend on it.
+          </InfoText>
+
+          <Hashtags>
+            <Tag>#MissingDragon</Tag>
+            <Tag>#DigitalLore</Tag>
+            <Tag>#EthicalAIQuest</Tag>
+            <Tag>#DetroitAwakens</Tag>
+          </Hashtags>
+        </InfoSection>
+      </Container>
+    </>
+  );
+}

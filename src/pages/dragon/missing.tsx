@@ -8,7 +8,7 @@ const Container = styled.div`
   min-height: 100vh;
   background: #ffffff;
   color: #000000;
-  font-family: ${({ theme }) => theme.typography.fontFamily.body};
+  font-family: ${({ theme }) => theme.typography.fontFamily.mono};
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,7 +19,7 @@ const Container = styled.div`
 const Title = styled.h1`
   font-size: ${({ theme }) => theme.typography.fontSize['6xl']};
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  font-family: ${({ theme }) => theme.typography.fontFamily.header};
+  font-family: ${({ theme }) => theme.typography.fontFamily.mono};
   margin: 0 0 ${({ theme }) => theme.spacing[12]} 0;
   color: #000000;
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
@@ -43,7 +43,7 @@ const QRCodeImage = styled.img`
 const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.typography.fontSize.xl};
   font-weight: ${({ theme }) => theme.typography.fontWeight.normal};
-  font-family: ${({ theme }) => theme.typography.fontFamily.body};
+  font-family: ${({ theme }) => theme.typography.fontFamily.mono};
   margin: ${({ theme }) => theme.spacing[6]} 0 0 0;
   color: #000000;
   text-align: center;
@@ -55,9 +55,9 @@ export default function Dragon() {
   useEffect(() => {
     const generateQRCode = async () => {
       try {
-        // Get the current URL
-        const currentUrl = window.location.href;
-        const qrCodeDataUrl = await QRCode.toDataURL(currentUrl, {
+        // Use the specific URL
+        const dragonUrl = "https://theethical.ai/dragon";
+        const qrCodeDataUrl = await QRCode.toDataURL(dragonUrl, {
           width: 300,
           margin: 2,
           color: {
@@ -89,7 +89,7 @@ export default function Dragon() {
             <QRCodeImage
               width={800}
               height={800}
-              src={'https://theethical.ai/dragon'} 
+              src={qrCodeDataUrl} 
               alt="QR Code linking to this page"
             />
           )}
