@@ -24,6 +24,10 @@ const Title = styled.h1`
   color: #000000;
   letter-spacing: ${({ theme }) => theme.typography.letterSpacing.tight};
   text-align: center;
+  @media screen and (max-width: 768px) {
+    font-size: 5rem;
+    margin-bottom: 0;
+  }
 `;
 
 const QRCodeContainer = styled.div`
@@ -38,6 +42,10 @@ const QRCodeImage = styled.img`
   display: block;
   max-width: 800px;
   height: auto;
+  @media screen and (max-width: 768px) {
+    width: 360px;
+    height: 360px;
+  }
 `;
 
 const Subtitle = styled.p`
@@ -47,6 +55,9 @@ const Subtitle = styled.p`
   margin: ${({ theme }) => theme.spacing[6]} 0 0 0;
   color: #000000;
   text-align: center;
+  @media screen and (max-width: 768px) {
+    font-size: 1.5rem;
+  }
 `;
 
 export default function Dragon() {

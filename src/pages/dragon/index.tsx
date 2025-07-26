@@ -54,7 +54,7 @@ const Description = styled.div`
   max-width: 800px;
   margin: 0 auto ${({ theme }) => theme.spacing[4]};
   text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.md};
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   line-height: 1.6;
   color: #cccccc;
   font-weight: 400;
