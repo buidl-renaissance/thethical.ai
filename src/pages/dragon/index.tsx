@@ -10,12 +10,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing[4]};
+  justify-content: flex-start;
+  padding: ${({ theme }) => theme.spacing[2]};
   position: relative;
+  overflow-y: auto;
   
   @media (min-width: 768px) {
     padding: ${({ theme }) => theme.spacing[8]};
+    justify-content: center;
   }
   
   &::before {
@@ -33,31 +35,47 @@ const Container = styled.div`
 
 const Title = styled.h1`
   font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(3rem, 4vw, 4rem);
   font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  margin-bottom: ${({ theme }) => theme.spacing[8]};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
   text-align: center;
   color: #00ffff;
   text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
   letter-spacing: 0.05em;
   line-height: 1.2;
+  margin-top: 2rem;
+  
+  @media (min-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[8]};
+  }
 `;
 
 const Description = styled.div`
   max-width: 800px;
-  margin: 0 auto ${({ theme }) => theme.spacing[8]};
+  margin: 0 auto ${({ theme }) => theme.spacing[4]};
   text-align: center;
-  font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  font-size: ${({ theme }) => theme.typography.fontSize.md};
   line-height: 1.6;
   color: #cccccc;
   font-weight: 400;
+  
+  @media (min-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[8]};
+    font-size: ${({ theme }) => theme.typography.fontSize.xl};
+  }
 `;
 
 const ImageContainer = styled.div`
-  margin: ${({ theme }) => theme.spacing[8]} 0;
+  margin: ${({ theme }) => theme.spacing[4]} 0;
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: 420px;
+  height: 420px;
+  
+  @media (min-width: 768px) {
+    margin: ${({ theme }) => theme.spacing[8]} 0;
+    width: 300px;
+    height: 300px;
+  }
   
   &::after {
     content: '';
@@ -72,8 +90,8 @@ const ImageContainer = styled.div`
 `;
 
 const InfoSection = styled.section`
-  margin-top: ${({ theme }) => theme.spacing[6]};
-  padding: ${({ theme }) => theme.spacing[4]};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
   background: rgba(26, 26, 26, 0.8);
   border: 1px solid rgba(0, 255, 255, 0.15);
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -89,41 +107,64 @@ const InfoSection = styled.section`
 
 const InfoTitle = styled.h2`
   font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
   font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-  margin-top: ${({ theme }) => theme.spacing[8]};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  margin-top: ${({ theme }) => theme.spacing[6]};
   color: #ffcc00;
   line-height: 1.3;
   
   &:first-child {
     margin-top: 0;
   }
+  
+  @media (min-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[6]};
+    margin-top: ${({ theme }) => theme.spacing[8]};
+  }
 `;
 
 const InfoText = styled.p`
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-  font-family: 'IBM Plex Serif', serif;
-  color: #e0e0e0;
-  line-height: 1.8;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
-  font-weight: 400;
-`;
-
-const FeatureList = styled.div`
-  margin: ${({ theme }) => theme.spacing[6]} 0;
-  padding-left: ${({ theme }) => theme.spacing[6]};
-`;
-
-const FeatureItem = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[4]};
   font-family: 'IBM Plex Serif', serif;
   color: #e0e0e0;
-  line-height: 1.7;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  line-height: 1.6;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  font-weight: 400;
+  
+  @media (min-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[6]};
+    line-height: 1.8;
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  }
+`;
+
+const FeatureList = styled.div`
+  margin: ${({ theme }) => theme.spacing[4]} 0;
+  padding-left: ${({ theme }) => theme.spacing[4]};
+  
+  @media (min-width: 768px) {
+    margin: ${({ theme }) => theme.spacing[6]} 0;
+    padding-left: ${({ theme }) => theme.spacing[6]};
+  }
+`;
+
+const FeatureItem = styled.div`
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+  font-family: 'IBM Plex Serif', serif;
+  color: #e0e0e0;
+  line-height: 1.5;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
   display: flex;
   align-items: flex-start;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[2]};
+  
+  @media (min-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[4]};
+    line-height: 1.7;
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
+    gap: ${({ theme }) => theme.spacing[3]};
+  }
 `;
 
 const Emoji = styled.span`
@@ -136,8 +177,8 @@ const QuestSection = styled.div`
   background: rgba(0, 255, 255, 0.05);
   border: 1px solid rgba(0, 255, 255, 0.2);
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  padding: ${({ theme }) => theme.spacing[4]};
-  margin: ${({ theme }) => theme.spacing[4]} 0;
+  padding: ${({ theme }) => theme.spacing[3]};
+  margin: ${({ theme }) => theme.spacing[3]} 0;
   
   @media (min-width: 768px) {
     padding: ${({ theme }) => theme.spacing[6]};
@@ -148,17 +189,28 @@ const QuestSection = styled.div`
 const QuestList = styled.ul`
   list-style: none;
   padding: 0;
-  margin: ${({ theme }) => theme.spacing[4]} 0;
+  margin: ${({ theme }) => theme.spacing[3]} 0;
+  
+  @media (min-width: 768px) {
+    margin: ${({ theme }) => theme.spacing[4]} 0;
+  }
 `;
 
 const QuestItem = styled.li`
-  margin-bottom: ${({ theme }) => theme.spacing[3]};
-  padding-left: ${({ theme }) => theme.spacing[4]};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
+  padding-left: ${({ theme }) => theme.spacing[3]};
   position: relative;
   font-family: 'IBM Plex Serif', serif;
   color: #e0e0e0;
-  line-height: 1.6;
-  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  line-height: 1.5;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  
+  @media (min-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[3]};
+    padding-left: ${({ theme }) => theme.spacing[4]};
+    line-height: 1.6;
+    font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  }
   
   &::before {
     content: '•';
@@ -171,11 +223,16 @@ const QuestItem = styled.li`
 
 const Hashtags = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[2]};
   flex-wrap: wrap;
-  margin-top: ${({ theme }) => theme.spacing[8]};
+  margin-top: ${({ theme }) => theme.spacing[6]};
   font-family: 'Share Tech Mono', monospace;
   justify-content: center;
+  
+  @media (min-width: 768px) {
+    gap: ${({ theme }) => theme.spacing[3]};
+    margin-top: ${({ theme }) => theme.spacing[8]};
+  }
 `;
 
 const Tag = styled.span`
@@ -189,8 +246,8 @@ const Tag = styled.span`
 `;
 
 const EmailSection = styled.div`
-  margin-top: ${({ theme }) => theme.spacing[8]};
-  padding: ${({ theme }) => theme.spacing[6]};
+  margin-top: ${({ theme }) => theme.spacing[6]};
+  padding: ${({ theme }) => theme.spacing[4]};
   background: rgba(0, 255, 255, 0.08);
   border: 2px solid rgba(0, 255, 255, 0.2);
   border-radius: ${({ theme }) => theme.borderRadius.lg};
@@ -199,6 +256,7 @@ const EmailSection = styled.div`
   width: 100%;
   
   @media (min-width: 768px) {
+    margin-top: ${({ theme }) => theme.spacing[8]};
     padding: ${({ theme }) => theme.spacing[8]};
   }
 `;
