@@ -1,5 +1,6 @@
 import Head from "next/head";
 import styled from "styled-components";
+import { useState } from "react";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -187,7 +188,153 @@ const Tag = styled.span`
   border: 1px solid rgba(0, 255, 136, 0.2);
 `;
 
+const EmailSection = styled.div`
+  margin-top: ${({ theme }) => theme.spacing[8]};
+  padding: ${({ theme }) => theme.spacing[6]};
+  background: rgba(0, 255, 255, 0.08);
+  border: 2px solid rgba(0, 255, 255, 0.2);
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  
+  @media (min-width: 768px) {
+    padding: ${({ theme }) => theme.spacing[8]};
+  }
+`;
+
+const EmailTitle = styled.h3`
+  font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  color: #00ffff;
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+`;
+
+const EmailDescription = styled.p`
+  color: #cccccc;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  line-height: 1.6;
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+`;
+
+const EmailForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+  max-width: 400px;
+  margin: 0 auto;
+  
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+  }
+`;
+
+const EmailInput = styled.input`
+  flex: 1;
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: #e0e0e0;
+  font-family: 'IBM Plex Serif', serif;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  outline: none;
+  transition: all 0.3s ease;
+  
+  &::placeholder {
+    color: #666666;
+  }
+  
+  &:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+  
+  &:invalid {
+    border-color: #ff4444;
+  }
+`;
+
+const SubmitButton = styled.button`
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[6]};
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.1));
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: #00ffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.2));
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const SuccessMessage = styled.div`
+  color: #00ff88;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+`;
+
+const ErrorMessage = styled.div`
+  color: #ff4444;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+`;
+
 export default function Dragon() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes("@")) {
+      setStatus("error");
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("loading");
+    
+    try {
+      // Here you would typically send the email to your backend
+      // For now, we'll simulate a successful submission
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setStatus("success");
+      setMessage("You've been added to the quest! Check your email for updates.");
+      setEmail("");
+    } catch {
+      setStatus("error");
+      setMessage("Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <>
       <Head>
@@ -285,6 +432,35 @@ export default function Dragon() {
             <Tag>#DetroitAwakens</Tag>
           </Hashtags>
         </InfoSection>
+
+        <EmailSection>
+          <EmailTitle>Join the Dragon Hunters</EmailTitle>
+          <EmailDescription>
+            Receive updates on the quest, new discoveries, and exclusive insights into the world of ethical AI.
+          </EmailDescription>
+          
+          <EmailForm onSubmit={handleSubmit}>
+            <EmailInput
+              type="email"
+              placeholder="Enter your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={status === "loading"}
+            />
+            <SubmitButton type="submit" disabled={status === "loading"}>
+              {status === "loading" ? "Joining..." : "Join Quest"}
+            </SubmitButton>
+          </EmailForm>
+          
+          {status === "success" && (
+            <SuccessMessage>{message}</SuccessMessage>
+          )}
+          
+          {status === "error" && (
+            <ErrorMessage>{message}</ErrorMessage>
+          )}
+        </EmailSection>
       </Container>
     </>
   );
