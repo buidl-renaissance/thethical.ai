@@ -694,9 +694,25 @@ export default function Dragon() {
               
               {locationStatus === "success" && location && (
                 <LocationInfo>
-                  📍 Location Found: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
-                  <br />
-                  <small>Use this to navigate to the lantern&apos;s location</small>
+                  {isFound ? (
+                    <>
+                      🎉 LANTERN FOUND! 🎉
+                      <br />
+                      📍 Location: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                      <br />
+                      <small>You&apos;ve discovered the lantern!</small>
+                    </>
+                  ) : (
+                    <>
+                      🔍 Keep Searching...
+                      <br />
+                      📍 Your Location: {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                      <br />
+                      📏 Distance: {calculateDistance(location.lat, location.lng, 42.344417, -83.060260).toFixed(1)} feet away
+                      <br />
+                      <small>Get within 30 feet to find the lantern</small>
+                    </>
+                  )}
                 </LocationInfo>
               )}
               
