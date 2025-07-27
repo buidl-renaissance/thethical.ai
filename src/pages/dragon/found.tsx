@@ -1,5 +1,6 @@
 import Head from "next/head";
 import styled from "styled-components";
+import { useState } from "react";
 
 const Container = styled.div`
   min-height: 100vh;
@@ -129,7 +130,191 @@ const Tag = styled.span`
   border: 1px solid rgba(0, 255, 136, 0.2);
 `;
 
+const EmailSection = styled.div`
+  margin-top: ${({ theme }) => theme.spacing[6]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background: rgba(0, 255, 255, 0.08);
+  border: 2px solid rgba(0, 255, 255, 0.2);
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+  
+  @media (min-width: 768px) {
+    margin-top: ${({ theme }) => theme.spacing[8]};
+    padding: ${({ theme }) => theme.spacing[8]};
+  }
+`;
+
+const EmailTitle = styled.h3`
+  font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  color: #00ffff;
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+`;
+
+const EmailDescription = styled.p`
+  color: #cccccc;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: 1.6;
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+`;
+
+const EmailForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+  max-width: 400px;
+  margin: 0 auto;
+  
+  @media (min-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+  }
+`;
+
+const EmailInput = styled.input`
+  flex: 1;
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: #e0e0e0;
+  font-family: 'IBM Plex Serif', serif;
+  font-size: ${({ theme }) => theme.typography.fontSize.lg};
+  outline: none;
+  transition: all 0.3s ease;
+  
+  &::placeholder {
+    color: #666666;
+  }
+  
+  &:focus {
+    border-color: #00ffff;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  }
+  
+  &:invalid {
+    border-color: #ff4444;
+  }
+`;
+
+const SubmitButton = styled.button`
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[6]};
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.2), rgba(0, 255, 255, 0.1));
+  border: 1px solid rgba(0, 255, 255, 0.4);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+  color: #00ffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  &:hover {
+    background: linear-gradient(135deg, rgba(0, 255, 255, 0.3), rgba(0, 255, 255, 0.2));
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const SuccessMessage = styled.div`
+  color: #00ff88;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+`;
+
+const ErrorMessage = styled.div`
+  color: #ff4444;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: ${({ theme }) => theme.borderRadius.md};
+`;
+
+const FeatureList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: ${({ theme }) => theme.spacing[6]} 0;
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+const FeatureItem = styled.li`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  color: #e0e0e0;
+  font-size: ${({ theme }) => theme.typography.fontSize.base};
+  line-height: 1.6;
+`;
+
+const Emoji = styled.span`
+  font-size: 1.2em;
+  flex-shrink: 0;
+  margin-top: 2px;
+`;
+    
 export default function DragonFound() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes("@")) {
+      setStatus("error");
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    setStatus("loading");
+    
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email,
+          source: 'dragon-found-page'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Subscription failed');
+      }
+      
+      setStatus("success");
+      setMessage(data.message || "You've been added to the quest! Check your email for updates.");
+      setEmail("");
+    } catch (error) {
+      setStatus("error");
+      setMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
+    }
+  };
+
   return (
     <>
       <Head>
@@ -216,6 +401,56 @@ export default function DragonFound() {
             chose this place because it represents the kind of collaborative, human-centered 
             approach to technology that ethical AI requires.
           </InfoText>
+
+          <EmailSection>
+            <EmailTitle>Stay Connected with the Quest</EmailTitle>
+            <EmailDescription>
+              Enter your email to receive exclusive updates about the dragon quest, ethical AI discoveries, 
+              and behind-the-scenes insights from Detroit&apos;s creative renaissance.
+            </EmailDescription>
+            
+            <EmailForm onSubmit={handleSubmit}>
+              <EmailInput
+                type="email"
+                placeholder="Enter your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={status === "loading"}
+              />
+              <SubmitButton type="submit" disabled={status === "loading"}>
+                {status === "loading" ? "Subscribing..." : "Subscribe"}
+              </SubmitButton>
+            </EmailForm>
+            
+            {status === "success" && (
+              <SuccessMessage>{message}</SuccessMessage>
+            )}
+            
+            {status === "error" && (
+              <ErrorMessage>{message}</ErrorMessage>
+            )}
+          </EmailSection>
+
+          <InfoTitle>What You&apos;ll Discover</InfoTitle>
+          <FeatureList>
+            <FeatureItem>
+              <Emoji>✨</Emoji>
+              <span>Exclusive updates on the dragon quest and ethical AI development</span>
+            </FeatureItem>
+            <FeatureItem>
+              <Emoji>📜</Emoji>
+              <span>Behind-the-scenes insights from Detroit&apos;s creative renaissance</span>
+            </FeatureItem>
+            <FeatureItem>
+              <Emoji>🧠</Emoji>
+              <span>Early access to new ethical AI principles and discoveries</span>
+            </FeatureItem>
+            <FeatureItem>
+              <Emoji>🐾</Emoji>
+              <span>Special content about the intersection of technology and human creativity</span>
+            </FeatureItem>
+          </FeatureList>
 
           <Hashtags>
             <Tag>#DragonFound</Tag>
